@@ -13,6 +13,8 @@ class ManifestEntry:
     cik: str
     date_filed: str
     strategy: str
+    year: Optional[int] = None
+    quarter: Optional[int] = None
 
 
 class Manifest:
@@ -37,6 +39,8 @@ class Manifest:
                 cik=payload["cik"],
                 date_filed=payload["date_filed"],
                 strategy=payload.get("strategy", "index"),
+                year=payload.get("year"),
+                quarter=payload.get("quarter"),
             )
         self._data = out
 
@@ -45,6 +49,24 @@ class Manifest:
 
     def get(self, accession: str) -> Optional[ManifestEntry]:
         return self._data.get(accession)
+
+    def remove_entries_for(self, year: int, quarter: int) -> int:
+        """Remove all entries for the given year/quarter. Returns count removed."""
+        to_remove = [
+            acc
+            for acc, ent in self._data.items()
+            if ent.year == year and ent.quarter == quarter
+        ]
+        for acc in to_remove:
+            del self._data[acc]
+        return len(to_remove)
+
+    def has_entries_for(self, year: int, quarter: int) -> bool:
+        """True if any entry exists for this year/quarter."""
+        return any(
+            ent.year == year and ent.quarter == quarter
+            for ent in self._data.values()
+        )
 
     def upsert(self, entry: ManifestEntry) -> None:
         self._data[entry.accession] = entry

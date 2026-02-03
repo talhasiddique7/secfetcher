@@ -17,7 +17,7 @@ from secfetch.index.master import (
     load_master_index,
 )
 from secfetch.network.client import SecClient
-from secfetch.storage.layout import filing_dir
+from secfetch.storage.layout import filing_dir, filings_dir_for_quarter
 from secfetch.storage.manifest import Manifest, ManifestEntry
 
 
@@ -53,6 +53,24 @@ def _normalize_file_types(file_types: Sequence[str]) -> List[str]:
 def _default_manifest_path(data_dir: Path) -> Path:
     # keep clean: state under data/_state/
     return data_dir / "_state" / "manifest.json"
+
+
+def has_existing_data_for_quarter(
+    data_dir: str | Path,
+    year: int,
+    quarter: int,
+    manifest_path: Optional[str | Path] = None,
+) -> bool:
+    """True if there is already data (manifest entries or filings dir) for this year/quarter."""
+    data_dir = Path(data_dir)
+    path = Path(manifest_path) if manifest_path else _default_manifest_path(data_dir)
+    if path.exists():
+        m = Manifest(path)
+        m.load()
+        if m.has_entries_for(year, quarter):
+            return True
+    quarter_dir = filings_dir_for_quarter(data_dir, year, quarter)
+    return quarter_dir.exists() and any(quarter_dir.iterdir())
 
 
 class FilingDownloader:
@@ -93,7 +111,16 @@ class FilingDownloader:
     async def aclose(self) -> None:
         await self._client.aclose()
 
-    async def download_quarter(self, *, year: int, quarter: int) -> List[DownloadResult]:
+    async def download_quarter(
+        self, *, year: int, quarter: int, redownload: bool = False
+    ) -> List[DownloadResult]:
+        if redownload:
+            self._manifest.remove_entries_for(year, quarter)
+            self._manifest.save_atomic()
+            quarter_dir = filings_dir_for_quarter(self.data_dir, year, quarter)
+            if quarter_dir.exists():
+                shutil.rmtree(quarter_dir)
+
         # Always fetch master index first (source of truth)
         master_path = await download_master_index(self._client, data_dir=self.data_dir, year=year, quarter=quarter)
         rows = load_master_index(master_path)
@@ -118,7 +145,7 @@ class FilingDownloader:
                     if self._on_progress is not None:
                         self._on_progress(completed, total, None, in_progress)
                 try:
-                    result = await self._download_one(row=row)
+                    result = await self._download_one(row=row, year=year, quarter=quarter)
                 finally:
                     async with progress_lock:
                         in_progress -= 1
@@ -142,13 +169,25 @@ class FilingDownloader:
                 pass
         return results
 
-    async def download_year(self, *, year: int, quarters: Sequence[int] = (1, 2, 3, 4)) -> List[DownloadResult]:
+    async def download_year(
+        self,
+        *,
+        year: int,
+        quarters: Sequence[int] = (1, 2, 3, 4),
+        redownload: bool = False,
+    ) -> List[DownloadResult]:
         out: List[DownloadResult] = []
         for q in quarters:
-            out.extend(await self.download_quarter(year=year, quarter=int(q)))
+            out.extend(
+                await self.download_quarter(
+                    year=year, quarter=int(q), redownload=redownload
+                )
+            )
         return out
 
-    async def _download_one(self, *, row: MasterIndexRow) -> DownloadResult:
+    async def _download_one(
+        self, *, row: MasterIndexRow, year: int, quarter: int
+    ) -> DownloadResult:
         accession = row.accession
         if self._manifest.has(accession):
             return DownloadResult(
@@ -161,6 +200,8 @@ class FilingDownloader:
 
         out_dir = filing_dir(
             data_dir=self.data_dir,
+            year=year,
+            quarter=quarter,
             form_type=row.form_type,
             cik=row.cik,
             accession=accession,
@@ -199,6 +240,8 @@ class FilingDownloader:
                     cik=row.cik.zfill(10),
                     date_filed=row.date_filed.isoformat(),
                     strategy="index",
+                    year=year,
+                    quarter=quarter,
                 )
             )
 

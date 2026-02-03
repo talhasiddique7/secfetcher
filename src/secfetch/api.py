@@ -39,18 +39,21 @@ def download_quarter(
     *,
     year: int,
     quarter: int,
-    forms: Sequence[str],
+    forms: Sequence[str] = ("10-Q",),
     data_dir: str | Path = "data",
     file_types: Sequence[str] = (".htm", ".html", ".xml", ".xbrl", ".pdf"),
     include_amended: bool = False,
     concurrency: int = 6,
     user_agent: Optional[str] = None,
     manifest_path: Optional[str | Path] = None,
+    redownload: bool = False,
     on_progress: Optional[Callable[[int, int, Optional[DownloadResult], int], None]] = None,
 ) -> List[DownloadResult]:
     async def _run() -> List[DownloadResult]:
         return await _run_with_downloader(
-            runner=lambda dl: dl.download_quarter(year=year, quarter=quarter),
+            runner=lambda dl: dl.download_quarter(
+                year=year, quarter=quarter, redownload=redownload
+            ),
             forms=forms,
             data_dir=data_dir,
             file_types=file_types,
@@ -67,7 +70,7 @@ def download_quarter(
 def download_year(
     *,
     year: int,
-    forms: Sequence[str],
+    forms: Sequence[str] = ("10-Q",),
     data_dir: str | Path = "data",
     file_types: Sequence[str] = (".htm", ".html", ".xml", ".xbrl", ".pdf"),
     include_amended: bool = False,
@@ -75,11 +78,14 @@ def download_year(
     user_agent: Optional[str] = None,
     manifest_path: Optional[str | Path] = None,
     quarters: Sequence[int] = (1, 2, 3, 4),
+    redownload: bool = False,
     on_progress: Optional[Callable[[int, int, Optional[DownloadResult], int], None]] = None,
 ) -> List[DownloadResult]:
     async def _run() -> List[DownloadResult]:
         return await _run_with_downloader(
-            runner=lambda dl: dl.download_year(year=year, quarters=quarters),
+            runner=lambda dl: dl.download_year(
+                year=year, quarters=quarters, redownload=redownload
+            ),
             forms=forms,
             data_dir=data_dir,
             file_types=file_types,

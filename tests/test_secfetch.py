@@ -86,8 +86,8 @@ def test_quarter_download_deletes_index_on_success(tmp_path: Path, monkeypatch: 
     qtr_index_dir = data_dir / "index" / "master" / "2024" / "QTR1"
     assert not qtr_index_dir.exists()
 
-    # Downloaded file should exist
-    out_file = data_dir / "filings" / "10-Q" / "0001000045" / accession / "doc.xml"
+    # Downloaded file should exist under year/quarter layout
+    out_file = data_dir / "filings" / "2024" / "QTR1" / "10-Q" / "0001000045" / accession / "doc.xml"
     assert out_file.exists()
 
 

@@ -49,6 +49,7 @@ pip install secfetcher</code></pre>
 
         <section id="quickstart" class="section">
           <h2>Quickstart (Python API)</h2>
+          <p>Defaults: <code>data_dir="data"</code>, <code>forms=["10-Q"]</code>. Override as needed.</p>
 
           <h3>Download one quarter</h3>
           <pre class="code-block"><code>from secfetcher import download_quarter
@@ -92,6 +93,7 @@ download_year(
 
         <section id="output" class="section">
           <h2>Output layout</h2>
+          <p>Filings are stored by <strong>year</strong> and <strong>quarter</strong>:</p>
           <pre class="code-block"><code>data/
   index/
     master/
@@ -99,12 +101,15 @@ download_year(
         QTR3/
           master.idx
   filings/
-    10-Q/
-      0000320193/
-        0000320193-24-000069/
-          &lt;downloaded files...&gt;
+    2024/
+      QTR3/
+        10-Q/
+          0000320193/
+            0000320193-24-000069/
+              &lt;downloaded files...&gt;
   _state/
     manifest.json</code></pre>
+          <p><strong>Resume:</strong> Running again for the same year/quarter skips already-downloaded filings. Use <code>redownload=True</code> (API) or <code>--redownload</code> (CLI) to clear and re-download.</p>
         </section>
 
         <section id="api" class="section">
