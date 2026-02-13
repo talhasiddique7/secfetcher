@@ -1,4 +1,4 @@
-# sec-fetcher
+# secfetcher
 
 Download SEC EDGAR filings with:
 - simple file download mode
@@ -6,7 +6,7 @@ Download SEC EDGAR filings with:
 - filtering by `ticker` or `cik`
 - latest single filing mode
 
-[![PyPI version](https://img.shields.io/pypi/v/sec-fetcher.svg)](https://pypi.org/project/sec-fetcher/)
+[![PyPI version](https://img.shields.io/pypi/v/secfetcher.svg)](https://pypi.org/project/secfetcher/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -16,7 +16,7 @@ Download SEC EDGAR filings with:
 
 | Link | Description |
 |------|-------------|
-| **[View documentation (GitHub Pages)](https://your-org.github.io/sec-fetcher/)** | Full docs: install, quickstart, CLI, form types, API reference. |
+| **[View documentation (GitHub Pages)](https://your-org.github.io/secfetcher/)** | Full docs: install, quickstart, CLI, form types, API reference. |
 | **[docs/index.html](docs/index.html)** | Open in browser for local viewing. |
 
 **Host the docs yourself:** Repo **Settings → Pages →** Deploy from branch **main**, folder **/docs**. See [docs/README.md](docs/README.md).
@@ -28,7 +28,7 @@ Download SEC EDGAR filings with:
 **Requires Python 3.10+.**
 
 ```bash
-pip install sec-fetcher
+pip install secfetcher
 ```
 
 With a virtual environment (recommended on PEP 668–managed systems):
@@ -36,10 +36,10 @@ With a virtual environment (recommended on PEP 668–managed systems):
 ```bash
 python -m venv .venv
 . .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install sec-fetcher
+pip install secfetcher
 ```
 
-**Package:** `sec-fetcher` (PyPI) · **Module / CLI:** `secfetch` or `secfetcher`
+**Package:** `secfetcher` (PyPI) · **Module / CLI:** `secfetch` or `secfetcher`
 
 ---
 
@@ -147,7 +147,7 @@ If a single `ticker` or single `cik` filter is provided, that identifier may be 
 ## Development
 
 ```bash
-git clone https://github.com/your-org/sec-fetcher.git && cd sec-fetcher
+git clone https://github.com/your-org/secfetcher.git && cd secfetcher
 python -m venv .venv && . .venv/bin/activate
 pip install -e ".[test]"
 pytest

@@ -9,4 +9,4 @@ This folder contains the project documentation as static HTML/CSS/JS.
 3. Branch: `main` (or your default), Folder: **/docs**.
 4. Save. The site will be at `https://<username>.github.io/<repo>/`.
 
-Optional: set the GitHub badge link in `index.html` to your repo URL (search for `your-org/sec-fetcher`).
+Optional: set the GitHub badge link in `index.html` to your repo URL (search for `your-org/secfetcher`).

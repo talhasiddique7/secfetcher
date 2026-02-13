@@ -3,8 +3,8 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sec-fetcher"
-version = "0.1.4"
+name = "secfetcher"
+version = "0.1.5"
 description = "Download SEC EDGAR filings by quarter/year via master index."
 readme = "README.md"
 requires-python = ">=3.10"
